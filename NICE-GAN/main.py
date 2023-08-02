@@ -10,10 +10,13 @@ def parse_args():
     desc = "Pytorch implementation of NICE-GAN"
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument('--phase', type=str, default='train', help='[train / test]')
+    parser.add_argument('--name', type=str, default='', help='save name')
     parser.add_argument('--light', type=str2bool, default=True, help='[NICE-GAN full version / NICE-GAN light version]')
     parser.add_argument('--dataset', type=str, default='YOUR_DATASET_NAME', help='dataset_name')
+    parser.add_argument('--sen12mscr', action='store_true', help='whether dataset is SEN12MS-CR dataset') # A : SAR(S1/VV,VH), B : EO(S2/B4,B3,B2)
 
-    parser.add_argument('--iteration', type=int, default=194800, help='The number of training iterations')
+    # parser.add_argument('--iteration', type=int, default=194800, help='The number of training iterations')
+    parser.add_argument('--iteration', type=int, default=0, help='The number of training iterations')
     parser.add_argument('--batch_size', type=int, default=1, help='The size of batch size')
     parser.add_argument('--print_freq', type=int, default=1000, help='The number of image print freq')
     parser.add_argument('--save_freq', type=int, default=10000, help='The number of model save freq')
@@ -30,6 +33,7 @@ def parse_args():
     parser.add_argument('--n_dis', type=int, default=7, help='The number of discriminator layer')
 
     parser.add_argument('--img_size', type=int, default=256, help='The size of image')
+    parser.add_argument('--load_size', type=int, default=256, help='The size of image')
     parser.add_argument('--img_ch', type=int, default=3, help='The size of image channel')
 
     parser.add_argument('--result_dir', type=str, default='Image_translation_codes/NICE-GAN-pytorch/results', help='Directory name to save the results')
@@ -41,6 +45,7 @@ def parse_args():
     
     parser.add_argument('--dataset_phase', type=str, default='train')
     parser.add_argument('--checkpoint', type=str, default='')
+    parser.add_argument("--use_epoch_train", action="store_true")
 
 
     return check_args(parser.parse_args())
@@ -48,10 +53,17 @@ def parse_args():
 """checking arguments"""
 def check_args(args):
     # --result_dir
-    check_folder(os.path.join(args.result_dir, os.path.basename(args.dataset), 'model'))
-    check_folder(os.path.join(args.result_dir, os.path.basename(args.dataset), 'img'))
-    check_folder(os.path.join(args.result_dir, os.path.basename(args.dataset), 'fakeA'))
-    check_folder(os.path.join(args.result_dir, os.path.basename(args.dataset), 'fakeB'))
+    if args.name == '':
+        check_folder(os.path.join(args.result_dir, os.path.basename(args.dataset), 'model'))
+        check_folder(os.path.join(args.result_dir, os.path.basename(args.dataset), 'img'))
+        check_folder(os.path.join(args.result_dir, os.path.basename(args.dataset), 'fakeA'))
+        check_folder(os.path.join(args.result_dir, os.path.basename(args.dataset), 'fakeB'))
+    else:
+        check_folder(os.path.join(args.result_dir, os.path.basename(args.name), 'model'))
+        check_folder(os.path.join(args.result_dir, os.path.basename(args.name), 'img'))
+        check_folder(os.path.join(args.result_dir, os.path.basename(args.name), 'fakeA'))
+        check_folder(os.path.join(args.result_dir, os.path.basename(args.name), 'fakeB'))
+        
 
     # --epoch
     try:

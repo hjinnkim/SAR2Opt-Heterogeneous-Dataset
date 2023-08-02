@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J pix2pix #Job이름
+#SBATCH -J pix2pix_EO2SAR #Job이름
 #SBATCH -p gpu_2080ti #gpu 할당
 #SBATCH -N 1 #노드1개 (고정)
 #SBATCH -n 4 #cpu4개(고정)
@@ -12,19 +12,22 @@
 # A : SAR, B : EO
 
 python train.py \
-    --dataroot  \
-    --name pix2pix_spring \
-    --model pix2pix \
-    --netG unet_256 \
-    --direction BtoA \
-    --dataset_mode sen12mscr_aligned \
+    --dataroot \
+    --use_parse_configs \
+    --use_epoch_train \
+    --name munit_spring \
+    --trainer MUNIT \
+    --config configs/munit_spring.yaml \
+    --sen12mscr \
     --sen12mscr_season spring \
     --sen12mscr_rescale default \
     --load_size 256 \
     --crop_size 256 \
-    --norm instance \
-    --pool_size 0 \
+    --batch_size \
+    --norm none \
     --n_epochs 100 \
-    --n_epochs_decay 100 \
-    --result_dir \
-    --eval
+    --output_path \
+    --lr 0.001 \
+    --save_epoch_freq 5 \
+    --print_freq 100 \
+    # --resume

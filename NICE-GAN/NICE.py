@@ -18,6 +18,13 @@ class NICE(object) :
         else :
             self.model_name = 'NICE'
 
+        self.img_size = args.img_size
+        self.load_size = args.load_size
+        self.sen12mscr = args.sen12mscr
+        self.sen12mscr_season = args.sen12mscr_season
+        self.sen12mscr_rescale = args.sen12mscr_rescale
+
+
         self.result_dir = args.result_dir
         self.dataset = args.dataset
 
@@ -27,33 +34,6 @@ class NICE(object) :
 
         # 总的运行iter数
         self.iteration = args.iteration
-        
-        if 'spring' in self.dataset:
-            if '10%' in self.dataset:
-                self.iteration = 194800
-            else:
-                self.iteration = 194800 * 2
-
-        if 'summer' in self.dataset:
-            if '10%' in self.dataset:
-                self.iteration = 122000
-            else:
-                self.iteration = 122000 * 2
-        
-        if 'fall' in self.dataset:
-            if '10%' in self.dataset:
-                self.iteration = 202800
-            else:
-                self.iteration = 202800 * 2
-        
-        if 'winter' in self.dataset:
-            if '10%' in self.dataset:
-                self.iteration = 101200
-            else:
-                self.iteration = 101200 * 2
-
-
-
         self.decay_flag = args.decay_flag
 
         self.batch_size = args.batch_size
@@ -124,35 +104,47 @@ class NICE(object) :
     ##################################################################################
 
     def build_model(self):
-        """ DataLoader """
-        train_transform = transforms.Compose([
-            transforms.RandomHorizontalFlip(),
-            transforms.Resize((self.img_size + 30, self.img_size+30)),
-            transforms.RandomCrop(self.img_size),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))
-        ])
-        test_transform = transforms.Compose([
-            transforms.Resize((self.img_size, self.img_size)),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))
-        ])
+        if self.sen12mscr:
+            train_transform = transforms.Compose([
+                transforms.Lambda(lambda img : torch.Tensor(img)),
+                transforms.RandomHorizontalFlip(),
+                transforms.Resize((self.load_size, self.load_size)),
+                transforms.RandomCrop(self.img_size)
+            ])
+            test_transform = transforms.Compose([
+                transforms.Lambda(lambda img : torch.Tensor(img)),
+                transforms.Resize((self.img_size, self.img_size))
+            ])
+        else:
+            """ DataLoader """
+            train_transform = transforms.Compose([
+                transforms.RandomHorizontalFlip(),
+                transforms.Resize((self.img_size + 30, self.img_size+30)),
+                transforms.RandomCrop(self.img_size),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))
+            ])
+            test_transform = transforms.Compose([
+                transforms.Resize((self.img_size, self.img_size)),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))
+            ])
 
-        self.trainA = ImageFolder(os.path.join('', self.dataset, 'trainA'), train_transform)
-        self.trainB = ImageFolder(os.path.join('', self.dataset, 'trainB'), train_transform)
-        
-        self.testA = ImageFolder(os.path.join('', self.dataset, 'testA'), test_transform)
-        self.testB = ImageFolder(os.path.join('', self.dataset, 'testB'), test_transform)
+            self.trainA = ImageFolder(os.path.join('', self.dataset, 'trainA'), train_transform)
+            self.trainB = ImageFolder(os.path.join('', self.dataset, 'trainB'), train_transform)
+            
+            self.testA = ImageFolder(os.path.join('', self.dataset, 'testA'), test_transform)
+            self.testB = ImageFolder(os.path.join('', self.dataset, 'testB'), test_transform)
 
-        # 这两句进行了修改，为了进行FID-Epoch实验
-        # self.testA = ImageFolder(os.path.join('', self.dataset, self.dataset_phase + "A"), test_transform)
-        # self.testB = ImageFolder(os.path.join('', self.dataset, self.dataset_phase + 'B'), test_transform)
+            # 这两句进行了修改，为了进行FID-Epoch实验
+            # self.testA = ImageFolder(os.path.join('', self.dataset, self.dataset_phase + "A"), test_transform)
+            # self.testB = ImageFolder(os.path.join('', self.dataset, self.dataset_phase + 'B'), test_transform)
 
 
-        self.trainA_loader = DataLoader(self.trainA, batch_size=self.batch_size, shuffle=True,pin_memory=True)
-        self.trainB_loader = DataLoader(self.trainB, batch_size=self.batch_size, shuffle=True,pin_memory=True)
-        self.testA_loader = DataLoader(self.testA, batch_size=1, shuffle=False,pin_memory=True)
-        self.testB_loader = DataLoader(self.testB, batch_size=1, shuffle=False,pin_memory=True)
+            self.trainA_loader = DataLoader(self.trainA, batch_size=self.batch_size, shuffle=True,pin_memory=True)
+            self.trainB_loader = DataLoader(self.trainB, batch_size=self.batch_size, shuffle=True,pin_memory=True)
+            self.testA_loader = DataLoader(self.testA, batch_size=1, shuffle=False,pin_memory=True)
+            self.testB_loader = DataLoader(self.testB, batch_size=1, shuffle=False,pin_memory=True)
 
         """ Define Generator, Discriminator """
         self.gen2B = ResnetGenerator(input_nc=self.img_ch, output_nc=self.img_ch, ngf=self.ch, n_blocks=self.n_res, img_size=self.img_size, light=self.light).to(self.device)
@@ -228,17 +220,20 @@ class NICE(object) :
                 self.G_optim.param_groups[0]['lr'] -= (self.lr / (self.iteration // 2))
                 self.D_optim.param_groups[0]['lr'] -= (self.lr / (self.iteration // 2))
 
-            try:
-                real_A, _ = trainA_iter.next()
-            except:
-                trainA_iter = iter(self.trainA_loader)
-                real_A, _ = trainA_iter.next()
-
-            try:
-                real_B, _ = trainB_iter.next()
-            except:
-                trainB_iter = iter(self.trainB_loader)
-                real_B, _ = trainB_iter.next()
+#             try:
+#                 real_A, _ = trainA_iter.next()
+#             except:
+#                 trainA_iter = iter(self.trainA_loader)
+#                 real_A, _ = trainA_iter.next()
+# 
+#             try:
+#                 real_B, _ = trainB_iter.next()
+#             except:
+#                 trainB_iter = iter(self.trainB_loader)
+#                 real_B, _ = trainB_iter.next()
+            
+            real_A, _ = trainA_iter.next()
+            real_B, _ = trainB_iter.next()
 
             real_A, real_B = real_A.to(self.device), real_B.to(self.device)
 
