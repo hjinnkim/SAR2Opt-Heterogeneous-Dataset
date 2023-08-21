@@ -27,6 +27,10 @@ class TrainOptions(BaseOptions):
         parser.add_argument('--beta1', type=float, default=0.0, help='momentum term of adam')
         parser.add_argument('--beta2', type=float, default=0.9, help='momentum term of adam')
         parser.add_argument('--no_TTUR', action='store_true', help='Use TTUR training scheme')
+        parser.add_argument('--use_hsv_aug', action='store_true', help='EO random color jittering')
+        parser.add_argument('--use_gray_aug', action='store_true', help='EO random grayscaling')
+        parser.add_argument('--use_gaussian_blur', action='store_true', help='EO random gaussian blur')
+        parser.add_argument('--kernel_size', type=int, default=5, help='the size of guassisn blur')
 
         # the default values for beta1 and beta2 differ by TTUR option
         opt, _ = parser.parse_known_args()

@@ -41,7 +41,11 @@ class BaseOptions():
 
         # for setting inputs
         parser.add_argument('--dataroot', type=str, default='./datasets/cityscapes/')
-        parser.add_argument('--dataset_mode', type=str, default='coco')
+        parser.add_argument('--dataset_mode', type=str, default='coco', help='[aligned_datasetHD]')
+        parser.add_argument('--sen12mscr_season', type=str, default='all', help='chooses the season for SEN12MS-CR dataset. [all | spring | summer | fall | winter | season1,seaon2 | season1,season2,seaon3]') # You can choose multiple seasons via comma. e.g.) spring,summer
+        parser.add_argument('--s1_rescale_mtehod', type=str, default='default', help='chooses the rescale_method for SEN12MS-CR dataset. [default | norm | clip_1 | clip_2 | norm_1 | norm_2]')
+        parser.add_argument('--s2_rescale_mtehod', type=str, default='default', help='chooses the rescale_method for SEN12MS-CR dataset. [default | norm | clip_1 | clip_2 | norm_1 | norm_2]')
+        parser.add_argument('--s1_rgb_composite', type=str, default='mean', help='chooses the rescale_method for SEN12MS-CR dataset. [mean]')
         parser.add_argument('--serial_batches', action='store_true', help='if true, takes images in order to make batches, otherwise takes them randomly')
         parser.add_argument('--no_flip', action='store_true', help='if specified, do not flip the images for data argumentation')
         parser.add_argument('--nThreads', default=0, type=int, help='# threads for loading data')

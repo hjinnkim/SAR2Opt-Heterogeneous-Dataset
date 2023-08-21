@@ -11,6 +11,7 @@ from thop import clever_format
 
 class NICE(object) :
     def __init__(self, args):
+        self.args = args
         self.light = args.light
 
         if self.light :
@@ -27,38 +28,11 @@ class NICE(object) :
 
         # 总的运行iter数
         self.iteration = args.iteration
-        
-        if 'spring' in self.dataset:
-            if '10%' in self.dataset:
-                self.iteration = 194800
-            else:
-                self.iteration = 194800 * 2
-
-        if 'summer' in self.dataset:
-            if '10%' in self.dataset:
-                self.iteration = 122000
-            else:
-                self.iteration = 122000 * 2
-        
-        if 'fall' in self.dataset:
-            if '10%' in self.dataset:
-                self.iteration = 202800
-            else:
-                self.iteration = 202800 * 2
-        
-        if 'winter' in self.dataset:
-            if '10%' in self.dataset:
-                self.iteration = 101200
-            else:
-                self.iteration = 101200 * 2
-
-
-
         self.decay_flag = args.decay_flag
 
         self.batch_size = args.batch_size
-        self.print_freq = args.print_freq
-        self.save_freq = args.save_freq
+        self.print_freq = args.print_freq // args.batch_size
+        self.save_freq = args.save_freq // args.batch_size
 
         self.lr = args.lr
         self.weight_decay = args.weight_decay
@@ -125,34 +99,46 @@ class NICE(object) :
 
     def build_model(self):
         """ DataLoader """
-        train_transform = transforms.Compose([
-            transforms.RandomHorizontalFlip(),
-            transforms.Resize((self.img_size + 30, self.img_size+30)),
-            transforms.RandomCrop(self.img_size),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))
-        ])
-        test_transform = transforms.Compose([
-            transforms.Resize((self.img_size, self.img_size)),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))
-        ])
+        if self.args.use_sen12mscr:
+            from sen12mscr.utils.utilsNICE import get_all_data_loaders
+            self.trainA_loader, self.trainB_loader, self.testA_loader, self.testB_loader = get_all_data_loaders(self.args)
 
-        self.trainA = ImageFolder(os.path.join('', self.dataset, 'trainA'), train_transform)
-        self.trainB = ImageFolder(os.path.join('', self.dataset, 'trainB'), train_transform)
-        
-        self.testA = ImageFolder(os.path.join('', self.dataset, 'testA'), test_transform)
-        self.testB = ImageFolder(os.path.join('', self.dataset, 'testB'), test_transform)
+        else:
+            train_transform = transforms.Compose([
+                transforms.RandomHorizontalFlip(),
+                transforms.Resize((self.img_size + 30, self.img_size+30)),
+                transforms.RandomCrop(self.img_size),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))
+            ])
+            test_transform = transforms.Compose([
+                transforms.Resize((self.img_size, self.img_size)),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))
+            ])
+            self.trainA = ImageFolder(os.path.join('', self.dataset, 'trainA'), train_transform)
+            self.trainB = ImageFolder(os.path.join('', self.dataset, 'trainB'), train_transform)
+            
+            self.testA = ImageFolder(os.path.join('', self.dataset, 'testA'), test_transform)
+            self.testB = ImageFolder(os.path.join('', self.dataset, 'testB'), test_transform)
 
-        # 这两句进行了修改，为了进行FID-Epoch实验
-        # self.testA = ImageFolder(os.path.join('', self.dataset, self.dataset_phase + "A"), test_transform)
-        # self.testB = ImageFolder(os.path.join('', self.dataset, self.dataset_phase + 'B'), test_transform)
+            # 这两句进行了修改，为了进行FID-Epoch实验
+            # self.testA = ImageFolder(os.path.join('', self.dataset, self.dataset_phase + "A"), test_transform)
+            # self.testB = ImageFolder(os.path.join('', self.dataset, self.dataset_phase + 'B'), test_transform)
 
 
-        self.trainA_loader = DataLoader(self.trainA, batch_size=self.batch_size, shuffle=True,pin_memory=True)
-        self.trainB_loader = DataLoader(self.trainB, batch_size=self.batch_size, shuffle=True,pin_memory=True)
-        self.testA_loader = DataLoader(self.testA, batch_size=1, shuffle=False,pin_memory=True)
-        self.testB_loader = DataLoader(self.testB, batch_size=1, shuffle=False,pin_memory=True)
+            self.trainA_loader = DataLoader(self.trainA, batch_size=self.batch_size, shuffle=True,pin_memory=True)
+            self.trainB_loader = DataLoader(self.trainB, batch_size=self.batch_size, shuffle=True,pin_memory=True)
+            self.testA_loader = DataLoader(self.testA, batch_size=1, shuffle=False,pin_memory=True)
+            self.testB_loader = DataLoader(self.testB, batch_size=1, shuffle=False,pin_memory=True)
+
+        """ Edit max iterations with argparse """
+        if self.args.use_epoch_train:
+            loader_length = len(self.trainA_loader)
+            self.iteration = loader_length * self.args.epoch
+            if not self.args.save_epoch_freq:
+                self.save_freq = loader_length * self.args.save_epoch_freq
+
 
         """ Define Generator, Discriminator """
         self.gen2B = ResnetGenerator(input_nc=self.img_ch, output_nc=self.img_ch, ngf=self.ch, n_blocks=self.n_res, img_size=self.img_size, light=self.light).to(self.device)
@@ -182,6 +168,8 @@ class NICE(object) :
         self.G_optim = torch.optim.Adam(itertools.chain(self.gen2B.parameters(), self.gen2A.parameters()), lr=self.lr, betas=(0.5, 0.999), weight_decay=self.weight_decay)
         self.D_optim = torch.optim.Adam(itertools.chain(self.disA.parameters(), self.disB.parameters()), lr=self.lr, betas=(0.5, 0.999), weight_decay=self.weight_decay)
 
+        """ """
+        
 
     def train(self):
         # writer = tensorboardX.SummaryWriter(os.path.join(self.result_dir, self.dataset, 'summaries/Allothers'))
@@ -442,8 +430,8 @@ class NICE(object) :
                                                                RGB2BGR(tensor2numpy(denorm(fake_B2A[0]))),
                                                                RGB2BGR(tensor2numpy(denorm(fake_B2A2B[0])))), 0)), 1)
 
-                cv2.imwrite(os.path.join(self.result_dir, self.dataset, 'img', 'A2B_%07d.png' % step), A2B * 255.0)
-                cv2.imwrite(os.path.join(self.result_dir, self.dataset, 'img', 'B2A_%07d.png' % step), B2A * 255.0)
+                cv2.imwrite(os.path.join(self.result_dir, os.path.basename(self.dataset), 'img', 'A2B_%07d.png' % step), A2B * 255.0)
+                cv2.imwrite(os.path.join(self.result_dir, os.path.basename(self.dataset), 'img', 'B2A_%07d.png' % step), B2A * 255.0)
                 
 
                 self.gen2B,self.gen2A = self.gen2B.to(self.device), self.gen2A.to(self.device)

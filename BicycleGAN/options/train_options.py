@@ -33,5 +33,11 @@ class TrainOptions(BaseOptions):
         parser.add_argument('--lambda_z', type=float, default=0.5, help='weight for ||E(G(random_z)) - random_z||')
         parser.add_argument('--lambda_kl', type=float, default=0.01, help='weight for KL loss')
         parser.add_argument('--use_same_D', action='store_true', help='if two Ds share the weights or not')
+        
+        parser.add_argument('--use_hsv_aug', action='store_true', help='EO random color jittering')
+        parser.add_argument('--use_gray_aug', action='store_true', help='EO random grayscaling')
+        parser.add_argument('--use_gaussian_blur', action='store_true', help='EO random gaussian blur')
+        parser.add_argument('--kernel_size', type=int, default=5, help='the size of guassisn blur')
+        
         self.isTrain = True
         return parser

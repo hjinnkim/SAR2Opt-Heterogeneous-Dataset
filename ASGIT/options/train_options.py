@@ -35,6 +35,10 @@ class TrainOptions(BaseOptions):
         parser.add_argument('--pool_size', type=int, default=50, help='the size of image buffer that stores previously generated images')
         parser.add_argument('--lr_policy', type=str, default='linear', help='learning rate policy. [linear | step | plateau | cosine]')
         parser.add_argument('--lr_decay_iters', type=int, default=50, help='multiply by a gamma every lr_decay_iters iterations')
+        parser.add_argument('--use_hsv_aug', action='store_true', help='EO random color jittering')
+        parser.add_argument('--use_gray_aug', action='store_true', help='EO random grayscaling')
+        parser.add_argument('--use_gaussian_blur', action='store_true', help='EO random gaussian blur')
+        parser.add_argument('--kernel_size', type=int, default=5, help='the size of guassisn blur')
 
         # 新增参数，用于指定不同数据集的长度（图像对个数）
         parser.add_argument('--data_length', type=int, default=1948, help='number of images in trainA directory')

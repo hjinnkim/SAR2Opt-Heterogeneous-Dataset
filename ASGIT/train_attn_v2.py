@@ -30,10 +30,10 @@ from util.visualizer import save_images_v3, save_images
 if __name__ == '__main__':
     opt = TrainOptions().parse()   # get training options
 
-    opt.num_threads = 0  # test code only supports num_threads = 1
-    opt.batch_size = 1  # test code only supports batch_size = 1
-    opt.serial_batches = True  # disable data shuffling; comment this line if results on randomly chosen images are needed.
-    opt.no_flip = True  # no flip; comment this line if results on flipped images are needed.
+    # opt.num_threads = 0  # test code only supports num_threads = 1
+    # opt.batch_size = 1  # test code only supports batch_size = 1
+    # opt.serial_batches = True  # disable data shuffling; comment this line if results on randomly chosen images are needed.
+    # opt.no_flip = True  # no flip; comment this line if results on flipped images are needed.
 
     dataset = create_dataset(opt)  # create a dataset given opt.dataset_mode and other options
     dataset_size = len(dataset)    # get the number of images in the dataset.

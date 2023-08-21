@@ -26,7 +26,11 @@ class BaseOptions():
         parser.add_argument('--gpu_ids', type=str, default='0', help='gpu ids: e.g. 0  0,1,2, 0,2, -1 for CPU mode')
         parser.add_argument('--name', type=str, default='', help='name of the experiment. It decides where to store samples and models')
         parser.add_argument('--preprocess', type=str, default='resize_and_crop', help='not implemented')
-        parser.add_argument('--dataset_mode', type=str, default='aligned', help='aligned,single')
+        parser.add_argument('--dataset_mode', type=str, default='aligned', help='aligned,single, aligned_datasetPix2Pix')
+        parser.add_argument('--sen12mscr_season', type=str, default='all', help='chooses the season for SEN12MS-CR dataset. [all | spring | summer | fall | winter | season1,seaon2 | season1,season2,seaon3]') # You can choose multiple seasons via comma. e.g.) spring,summer
+        parser.add_argument('--s1_rescale_mtehod', type=str, default='default', help='chooses the rescale_method for SEN12MS-CR dataset. [default | norm | clip_1 | clip_2 | norm_1 | norm_2]')
+        parser.add_argument('--s2_rescale_mtehod', type=str, default='default', help='chooses the rescale_method for SEN12MS-CR dataset. [default | norm | clip_1 | clip_2 | norm_1 | norm_2]')
+        parser.add_argument('--s1_rgb_composite', type=str, default='mean', help='chooses the rescale_method for SEN12MS-CR dataset. [mean]')  
         parser.add_argument('--model', type=str, default='bicycle_gan', help='chooses which model to use. bicycle,, ...')
         parser.add_argument('--direction', type=str, default='AtoB', help='AtoB or BtoA')
         parser.add_argument('--epoch', type=str, default='latest', help='which epoch to load? set to latest to use latest cached model')
