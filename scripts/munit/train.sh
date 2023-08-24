@@ -44,12 +44,12 @@
 # s1_rgb_composite  : mean
 
 
-python train.py \
-    --config configs/opt2sar_sen12mscr.yaml \
-    --output_path \
+python MUNIT/train.py \
+    --config MUNIT/configs/opt2sar_sen12mscr.yaml \
+    --output_path /home/haneollee/myworkspace_hj/SAR2Opt-Heterogeneous-Dataset/results \
     --trainer MUNIT \
     --use_argparse_configs \
-    --data_root \
+    --data_root /nas2/lait/5000_Dataset/Image/SEN12MSCR \
     --name munit_spring \
     --lr 0.001 \
     --lr_policy step \
@@ -61,7 +61,7 @@ python train.py \
     --vgg_w 0 \
     --use_epoch_train \
     --nepoch 100 \
-    --batch_size \
+    --batch_size 4 \
     --num_workers 8 \
     --log_iter 1000 \
     --image_save_iter 4000 \
@@ -70,10 +70,10 @@ python train.py \
     --new_size 286 \
     --crop_size 256 \
     --sen12mscr_season spring \
-    --s1_rescale_mtehod default \
-    --s2_rescale_mtehod default \
+    --s1_rescale_method clip_1 \
+    --s2_rescale_method clip_1 \
     --s1_rgb_composite mean \
-    # --use_hsv_aug \
-    # --use_gray_aug \
-    # --use_gaussian_blur \
-    # --kernel_size 5 \
+    --use_hsv_aug \
+    --use_gray_aug \
+    --use_gaussian_blur \
+    --kernel_size 5 \

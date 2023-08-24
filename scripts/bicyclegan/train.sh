@@ -47,24 +47,24 @@
 # use_gaussian_blur : store_true (EO Random Gaussian Blur) #TODO
 # kernel_size       : 3 / 5 / 7 (EO Random Gaussian Blur kernel size) #TODO
 
-python train.py \
-    --dataroot  \
+python BicycleGAN/train.py \
+    --dataroot /nas2/lait/5000_Dataset/Image/SEN12MSCR \
     --name bicyclegan_spring \
-    --model bycycle_gan \
+    --model bicycle_gan \
     --netG unet_256 \
     --direction BtoA \
-    --dataset_mode aligned_datasetPix2Pix \
+    --dataset_mode aligned_Pix2Pix \
     --sen12mscr_season spring \
-    --s1_rescale_mtehod default \
-    --s2_rescale_mtehod default \
+    --s1_rescale_method clip_1 \
+    --s2_rescale_method clip_1 \
     --s1_rgb_composite mean \
     --load_size 286 \
     --crop_size 256 \
-    --batch_size \
+    --batch_size 4 \
     --norm instance \
     --niter 50 \
     --niter_decay 50 \
-    --checkpoints_dir \
+    --checkpoints_dir /home/haneollee/myworkspace_hj/SAR2Opt-Heterogeneous-Dataset/results \
     --nz 8 \
     --lr 0.001 \
     --lr_policy linear \
@@ -79,7 +79,7 @@ python train.py \
     --display_id 3 \
     --display_port 8099 \
     --update_html_freq 10000 \
-    # --use_hsv_aug \
-    # --use_gray_aug \
-    # --use_gaussian_blur \
-    # --kernel_size 5 \
+    --use_hsv_aug \
+    --use_gray_aug \
+    --use_gaussian_blur \
+    --kernel_size 5 \

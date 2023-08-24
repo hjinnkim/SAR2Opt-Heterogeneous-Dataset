@@ -31,7 +31,6 @@ parser.add_argument('--lr', type=float, default=None, help='initial learning rat
 parser.add_argument('--lr_policy', type=str, default=None, help='learning rate policy. [constant | step]')
 parser.add_argument('--gan_w', type=float, default=None, help='weight of adversarial loss')
 parser.add_argument('--recon_x_w', type=float, default=None, help='weight of image reconstruction loss')
-parser.add_argument('', type=float, default=None, help='initial learning rate for adam')
 parser.add_argument('--recon_s_w', type=float, default=None, help='weight of style reconstruction loss')
 parser.add_argument('--recon_c_w', type=float, default=None, help='weight of content reconstruction loss')
 parser.add_argument('--recon_x_cyc_w', type=float, default=None, help='weight of explicit style augmented cycle consistency loss')
@@ -40,16 +39,16 @@ parser.add_argument("--use_epoch_train", action="store_true")
 parser.add_argument('--nepoch', type=int, default=100, help='train_epochs')
 parser.add_argument('--batch_size', type=int, default=None, help='input batch size')
 parser.add_argument('--num_workers', default=None, type=int, help='# threads for loading data')
-parser.add_argument('--log_iter', type=int, default=1000, help='frequency of saving checkpoints at the end of epochs')
-parser.add_argument('--image_save_iter', type=int, default=4000, help='frequency of saving checkpoints at the end of epochs')
-parser.add_argument('--snapshop_save_epoch', type=int, default=5, help='frequency of saving checkpoints at the end of epochs')
+parser.add_argument('--log_iter', type=int, default=None, help='frequency of saving checkpoints at the end of epochs')
+parser.add_argument('--image_save_iter', type=int, default=None, help='frequency of saving checkpoints at the end of epochs')
+parser.add_argument('--snapshop_save_epoch', type=int, default=None, help='frequency of saving checkpoints at the end of epochs')
 parser.add_argument("--use_sen12mscr", action="store_true")
 parser.add_argument('--sen12mscr_season', type=str, default='all', help='chooses the season for SEN12MS-CR dataset. [all | spring | summer | fall | winter | season1,seaon2 | season1,season2,seaon3]') # You can choose multiple seasons via comma. e.g.) spring,summer
-parser.add_argument('--s1_rescale_mtehod', type=str, default='default', help='chooses the rescale_method for SEN12MS-CR dataset. [default | norm | clip_1 | clip_2 | norm_1 | norm_2]')
-parser.add_argument('--s2_rescale_mtehod', type=str, default='default', help='chooses the rescale_method for SEN12MS-CR dataset. [default | norm | clip_1 | clip_2 | norm_1 | norm_2]')
+parser.add_argument('--s1_rescale_method', type=str, default='default', help='chooses the rescale_method for SEN12MS-CR dataset. [default | norm | clip_1 | clip_2 | norm_1 | norm_2]')
+parser.add_argument('--s2_rescale_method', type=str, default='default', help='chooses the rescale_method for SEN12MS-CR dataset. [default | norm | clip_1 | clip_2 | norm_1 | norm_2]')
 parser.add_argument('--s1_rgb_composite', type=str, default='mean', help='chooses the rescale_method for SEN12MS-CR dataset. [mean]')
-parser.add_argument('--new_size', type=int, default=286, help='scale images to this size')
-parser.add_argument('--crop_size', type=int, default=256, help='then crop to this size')
+parser.add_argument('--new_size', type=int, default=None, help='scale images to this size')
+parser.add_argument('--crop_size', type=int, default=None, help='then crop to this size')
 parser.add_argument('--use_hsv_aug', action='store_true', help='EO random color jittering')
 parser.add_argument('--use_gray_aug', action='store_true', help='EO random grayscaling')
 parser.add_argument('--use_gaussian_blur', action='store_true', help='EO random gaussian blur')
@@ -60,6 +59,8 @@ opts = parser.parse_args()
 cudnn.benchmark = True
 
 # Load experiment setting
+
+
 config = get_config(opts.config)
 max_iter = config['max_iter']
 display_size = config['display_size']
@@ -69,11 +70,11 @@ config['vgg_model_path'] = opts.output_path
 if opts.use_argparse_configs:
     if not opts.data_root:
         config['data_root'] = opts.data_root
-    if not opts.name:
+    if opts.name:
         config['name'] = opts.name
-    if not opts.lr:
+    if opts.lr:
         config['lr'] = opts.lr
-    if not opts.lr_policy:
+    if opts.lr_policy:
         config['lr_policy'] = opts.lr_policy
     if not opts.gan_w:
         config['gan_w'] = opts.gan_w
@@ -93,13 +94,13 @@ if opts.use_argparse_configs:
         config['use_epoch_train'] = False
     if opts.nepoch:
         config['train_epochs'] = opts.nepoch     
-    if not opts.batch_size:
+    if opts.batch_size:
         config['batch_size'] = opts.batch_size
-    if not opts.num_workers:
+    if opts.num_workers:
         config['num_workers'] = opts.num_workers
-    if not opts.log_iter:
-        config['log_iter'] = opts.log_iter
-    if not opts.image_save_iter:
+    if opts.log_iter:
+        config['log_iter'] = opts.log_iter        
+    if opts.image_save_iter:
         config['image_save_iter'] = opts.image_save_iter
     if opts.use_sen12mscr:
         config['dataset'] = 'SEN12MS-CR'

@@ -41,32 +41,30 @@
 # use_gaussian_blur : store_true (EO Random Gaussian Blur) #TODO
 # kernel_size       : 3 / 5 / 7 (EO Random Gaussian Blur kernel size) #TODO
 
-python train.py \
-    --dataroot  \
+python SPADE/train.py \
+    --dataroot /nas2/lait/5000_Dataset/Image/SEN12MSCR \
     --name spade_spring \
     --model pix2pix \
     --netG spade \
-    --label_nc 0 \
-    --dataset_mode aligned_datasetHD \
+    --label_nc 3 \
+    --no_instance \
+    --dataset_mode aligned_SPADE \
+    --use_sen12mscr \
     --sen12mscr_season spring \
-    --s1_rescale_mtehod default \
-    --s2_rescale_mtehod default \
+    --s1_rescale_method default \
+    --s2_rescale_method default \
     --s1_rgb_composite mean \
     --load_size 286 \
     --crop_size 256 \
-    --batch_size \
-    --norm instance \
-    --pool_size 0 \
+    --batchSize 4 \
     --niter 50 \
     --niter_decay 50 \
-    --checkpoints_dir \
+    --checkpoints_dir /home/haneollee/myworkspace_hj/SAR2Opt-Heterogeneous-Dataset/results \
     --lr 0.001 \
     --lambda_feat 10.0 \
     --save_epoch_freq 5 \
     --print_freq 1000 \
     --display_freq 4000 \
-    --display_id 6 \
-    --display_port 8103 \
     # --use_hsv_aug \
     # --use_gray_aug \
     # --use_gaussian_blur \

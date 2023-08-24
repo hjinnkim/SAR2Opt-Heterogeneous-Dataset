@@ -26,6 +26,8 @@ class SPADEGenerator(BaseNetwork):
         super().__init__()
         self.opt = opt
         nf = opt.ngf
+        
+        print(opt.semantic_nc)
 
         self.sw, self.sh = self.compute_latent_vector_size(opt)
 

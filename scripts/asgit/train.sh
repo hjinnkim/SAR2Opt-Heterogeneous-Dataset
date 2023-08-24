@@ -42,24 +42,24 @@
 # use_gaussian_blur : store_true (EO Random Gaussian Blur) #TODO
 # kernel_size       : 3 / 5 / 7 (EO Random Gaussian Blur kernel size) #TODO
 
-python train_attn_v2.py \
-    --dataroot  \
+python ASGIT/train_attn_v2.py \
+    --dataroot /nas2/lait/5000_Dataset/Image/SEN12MSCR \
     --name asgit_spring \
     --model attn_cycle_gan \
     --netG resnet_9blocks \
     --direction BtoA \
-    --dataset_mode unaligned_datasetASGIT \
+    --dataset_mode unaligned_ASGIT \
     --sen12mscr_season spring \
-    --s1_rescale_mtehod default \
-    --s2_rescale_mtehod default \
+    --s1_rescale_method default \
+    --s2_rescale_method default \
     --s1_rgb_composite mean \
     --load_size 286 \
     --crop_size 256 \
-    --batch_size \
+    --batch_size 4 \
     --norm instance \
     --niter 50 \
     --niter_decay 50 \
-    --checkpoints_dir \
+    --checkpoints_dir /home/haneollee/myworkspace_hj/SAR2Opt-Heterogeneous-Dataset/results \
     --lr 0.001 \
     --lr_policy linear \
     --save_epoch_freq 5 \

@@ -107,7 +107,8 @@ class Pix2PixModel(torch.nn.Module):
 
     def preprocess_input(self, data):
         # move to GPU and change data types
-        data['label'] = data['label'].long()
+        if not self.opt.use_sen12mscr:
+            data['label'] = data['label'].long()
         if self.use_gpu():
             data['label'] = data['label'].cuda()
             data['instance'] = data['instance'].cuda()
@@ -132,7 +133,7 @@ class Pix2PixModel(torch.nn.Module):
 
     def compute_generator_loss(self, input_semantics, real_image):
         G_losses = {}
-
+        
         fake_image, KLD_loss = self.generate_fake(
             input_semantics, real_image, compute_kld_loss=self.opt.use_vae)
 

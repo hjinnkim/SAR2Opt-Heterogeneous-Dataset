@@ -13,7 +13,6 @@ from trainers.pix2pix_trainer import Pix2PixTrainer
 
 # parse options
 opt = TrainOptions().parse()
-
 # print options to help debugging
 print(' '.join(sys.argv))
 

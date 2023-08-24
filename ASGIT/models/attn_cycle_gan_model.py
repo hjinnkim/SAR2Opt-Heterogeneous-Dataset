@@ -98,7 +98,6 @@ class AttnCycleGANModel(BaseModel):
         self.attn_A_index = input['ADX' if AtoB else'BDX']
         self.attn_B_index = input['BDX' if AtoB else'ADX']
 
-
         if AtoB:
             self.attn_A, self.attn_B = self.aux_data.get_attn_map(self.attn_A_index, self.attn_B_index)
         else:

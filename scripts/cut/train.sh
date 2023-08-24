@@ -41,28 +41,25 @@
 # use_gaussian_blur : store_true (EO Random Gaussian Blur) #TODO
 # kernel_size       : 3 / 5 / 7 (EO Random Gaussian Blur kernel size) #TODO
 
-python train.py --dataroot ./datasets/sar2opt --name sar2opt_CUT --CUT_mode CUT
-
-
-python train.py \
-    --dataroot  \
+python CUT/train.py \
+    --dataroot /nas2/lait/5000_Dataset/Image/SEN12MSCR \
     --name cut_spring \
     --model cut \
     --CUT_mode CUT \
     --netG resnet_9blocks \
     --direction BtoA \
-    --dataset_mode unaligned_datasetCycleGAN \
+    --dataset_mode unaligned_CUT \
     --sen12mscr_season spring \
-    --s1_rescale_mtehod default \
-    --s2_rescale_mtehod default \
+    --s1_rescale_method default \
+    --s2_rescale_method default \
     --s1_rgb_composite mean \
     --load_size 286 \
     --crop_size 256 \
-    --batch_size \
+    --batch_size 4 \
     --pool_size 50 \
     --n_epochs 50 \
     --n_epochs_decay 50 \
-    --checkpoints_dir \
+    --checkpoints_dir /home/haneollee/myworkspace_hj/SAR2Opt-Heterogeneous-Dataset/results \
     --lr 0.001 \
     --lr_policy linear \
     --save_epoch_freq 5 \

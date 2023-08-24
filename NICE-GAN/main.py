@@ -39,8 +39,8 @@ def parse_args():
     parser.add_argument('--result_dir', type=str, default='Image_translation_codes/NICE-GAN-pytorch/results', help='Directory name to save the results')
     parser.add_argument("--use_sen12mscr", action="store_true")
     parser.add_argument('--sen12mscr_season', type=str, default='all', help='chooses the season for SEN12MS-CR dataset. [all | spring | summer | fall | winter | season1,seaon2 | season1,season2,seaon3]') # You can choose multiple seasons via comma. e.g.) spring,summer
-    parser.add_argument('--s1_rescale_mtehod', type=str, default='default', help='chooses the rescale_method for SEN12MS-CR dataset. [default | norm | clip_1 | clip_2 | norm_1 | norm_2]')
-    parser.add_argument('--s2_rescale_mtehod', type=str, default='default', help='chooses the rescale_method for SEN12MS-CR dataset. [default | norm | clip_1 | clip_2 | norm_1 | norm_2]')
+    parser.add_argument('--s1_rescale_method', type=str, default='default', help='chooses the rescale_method for SEN12MS-CR dataset. [default | norm | clip_1 | clip_2 | norm_1 | norm_2]')
+    parser.add_argument('--s2_rescale_method', type=str, default='default', help='chooses the rescale_method for SEN12MS-CR dataset. [default | norm | clip_1 | clip_2 | norm_1 | norm_2]')
     parser.add_argument('--s1_rgb_composite', type=str, default='mean', help='chooses the rescale_method for SEN12MS-CR dataset. [mean]')
     parser.add_argument('--use_hsv_aug', action='store_true', help='EO random color jittering')
     parser.add_argument('--use_gray_aug', action='store_true', help='EO random grayscaling')

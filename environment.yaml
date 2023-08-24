@@ -1,4 +1,4 @@
-name: torch38
+name: SEN12MS-CR
 channels:
   - pytorch
   - conda-forge
@@ -208,3 +208,12 @@ dependencies:
     - webencodings==0.5.1
     - widgetsnbextension==4.0.3
     - yellowbrick==1.5
+    - dominate==2.8.0
+    - visdom==0.2.4
+    - torchfile==0.1.0
+    - tensorboard
+    - thop
+    - dominate
+    - scipy
+    - dill
+    

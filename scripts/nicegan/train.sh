@@ -37,14 +37,14 @@
 # kernel_size       : 3 / 5 / 7 (EO Random Gaussian Blur kernel size) 
 # benchmark_flag    : False (Do not benchmarking)
 
-python main.py \
-    --dataset \
+python NICE-GAN/main.py \
+    --data_root /nas2/lait/5000_Dataset/Image/SEN12MSCR \
     --phase train \
     --light False \
     --iteration 0 \
     --use_epoch_train \
     --epoch 100 \
-    --batch_size \
+    --batch_size 2 \
     --print_freq 1000 \
     --save_freq 10000 \
     --save_epoch_freq 5 \
@@ -55,11 +55,11 @@ python main.py \
     --recon_weight 10 \
     --img_size 256 \
     --load_size 286 \
-    --result_dir \
+    --result_dir /home/haneollee/myworkspace_hj/SAR2Opt-Heterogeneous-Dataset/results \
     --use_sen12mscr \
     --sen12mscr_season spring \
-    --s1_rescale_mtehod default \
-    --s2_rescale_mtehod default \
+    --s1_rescale_method norm \
+    --s2_rescale_method norm \
     --s1_rgb_composite mean \
     --benchmark_flag False \
     # --use_hsv_aug \

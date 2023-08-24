@@ -4,8 +4,13 @@ from data.base_data_loader import BaseDataLoader
 
 def CreateDataset(opt):
     dataset = None
-    from data.aligned_dataset import AlignedDataset
-    dataset = AlignedDataset()
+    if opt.use_sen12mscr:
+        from data.aligned_Pix2PixHD_dataset import AlignedPix2PixHDDataset
+        dataset = AlignedPix2PixHDDataset()
+        
+    else:
+        from data.aligned_dataset import AlignedDataset
+        dataset = AlignedDataset()
 
     print("dataset [%s] was created" % (dataset.name()))
     dataset.initialize(opt)

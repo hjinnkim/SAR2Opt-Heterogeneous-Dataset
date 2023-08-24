@@ -35,7 +35,7 @@ if opt.debug:
 
 data_loader = CreateDataLoader(opt)
 dataset = data_loader.load_data()
-dataset_size = len(data_loader) * opt.batch_size
+dataset_size = len(data_loader) * opt.batchSize
 print('#training images = %d' % dataset_size)
 
 model = create_model(opt)
